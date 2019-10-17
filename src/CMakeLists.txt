@@ -6,6 +6,8 @@ add_executable(
 
 target_sources(
     ${PROJECT_NAME} PRIVATE
+        Midi.h
+        DrumStateMachine.h
         main.cpp
 )
 
