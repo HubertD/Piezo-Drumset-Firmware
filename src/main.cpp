@@ -29,13 +29,14 @@ int main()
     SetupAdc();
     SetupUart();
 
-    Midi midi(uart);
+    using MIDI = Midi<UART>;
+    MIDI midi(uart);
 
-    using DrumTuple = std::tuple<ADC::CHANNEL, DrumStateMachine, Midi::PITCH>;
+    using DrumTuple = std::tuple<ADC::CHANNEL, DrumStateMachine, MIDI::PITCH>;
     std::array<DrumTuple, 3> drumTuples {
-        DrumTuple { ADC::CHANNEL::AIN0, DrumStateMachine {}, Midi::PITCH::SNARE_1 },
-        DrumTuple { ADC::CHANNEL::AIN2, DrumStateMachine {}, Midi::PITCH::MID_TOM_1 },
-        DrumTuple { ADC::CHANNEL::AIN3, DrumStateMachine {}, Midi::PITCH::HIHAT_CLOSED },
+        DrumTuple { ADC::CHANNEL::AIN0, DrumStateMachine {}, MIDI::PITCH::SNARE_1 },
+        DrumTuple { ADC::CHANNEL::AIN2, DrumStateMachine {}, MIDI::PITCH::MID_TOM_1 },
+        DrumTuple { ADC::CHANNEL::AIN3, DrumStateMachine {}, MIDI::PITCH::HIHAT_CLOSED },
     };
 
     while (true)
@@ -46,11 +47,11 @@ int main()
             {
                 if (drumSM.GetState() == DrumStateMachine::State::TRIGGERED)
                 {
-                    midi.SendNoteOn(Midi::CHANNEL_DRUMS, pitch, drumSM.GetVelocity());
+                    midi.SendNoteOn(MIDI::CHANNEL_DRUMS, pitch, drumSM.GetVelocity());
                 }
                 else
                 {
-                    midi.SendNoteOff(Midi::CHANNEL_DRUMS, pitch, 0);
+                    midi.SendNoteOff(MIDI::CHANNEL_DRUMS, pitch, 0);
                 }
             }
         }
