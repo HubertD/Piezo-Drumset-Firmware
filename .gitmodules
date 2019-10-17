@@ -1,0 +1,3 @@
+[submodule "external/LibreUCpp"]
+	path = external/LibreUCpp
+	url = https://github.com/LibreUCpp/LibreUCpp.git
