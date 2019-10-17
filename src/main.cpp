@@ -2,11 +2,11 @@
 #include <tuple>
 #include <LibreUCpp/HAL/Clock.h>
 #include <LibreUCpp/HAL/ClockConfig.h>
+#include <LibreUCpp/HAL/Systick.h>
 #include <LibreUCpp/HAL/Port.h>
 #include <LibreUCpp/HAL/Pin.h>
 #include <LibreUCpp/HAL/UART.h>
 #include <LibreUCpp/HAL/ADC.h>
-#include <LibreUCpp/HAL/Systick.h>
 #include "Midi.h"
 #include "DrumStateMachine.h"
 
@@ -15,7 +15,7 @@ using namespace LibreUCpp::HAL;
 static Clock clk;
 static UART uart;
 static ADC adc;
-static volatile uint32_t TIME = 0;
+static volatile uint32_t TIME { 0 };
 
 int main();
 extern "C" void SysTick_Handler();
@@ -43,7 +43,9 @@ int main()
     {
         for (auto& [adcChannel, drumSM, pitch]: drumTuples)
         {
-            if (drumSM.Update(TIME, adc.ReadChannel(adcChannel)))
+            auto adcValue = adc.ReadChannel(adcChannel);
+
+            if (drumSM.Update(TIME, adcValue))
             {
                 if (drumSM.GetState() == DrumStateMachine::State::TRIGGERED)
                 {
@@ -111,5 +113,6 @@ static void SetupUart()
         UART::RXPAD::RXPO1, UART::TXPAD::TXPO0,
         GCLK::CalcFrequency(GCLK::GENERATOR::Generator_0, clk.GetXosc32kFrequency(), clk.GetXoscFrequency())
     );
+    
     uart.Init(115200, UART::BITS::EIGHT, UART::PARITY::NONE, UART::STOP_BITS::ONE);
 }
